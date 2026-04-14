@@ -12,7 +12,7 @@ def initialize_database():
     # Create the table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS accounts
-            (ID integer primary key, 
+            (id integer primary key, 
             Name text, 
             Balance real)
 ''')

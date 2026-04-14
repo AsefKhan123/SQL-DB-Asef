@@ -8,9 +8,12 @@ connector = connection.cursor()
 query = connector.execute
 finish = connector.close
 getRow = connector.fetchone
+save = connection.commit
 
 # Query models
 INSERT = "INSERT INTO accounts (name, balance) VALUES (?, ?) RETURNING ID"
+SELECT = "SELECT * FROM accounts WHERE id = (?)"
+DELETE = "DELETE FROM accounts WHERE id = (?)"
 
 # Create an account
 def create():
@@ -25,20 +28,37 @@ def create():
         else:
             break
     
-    # Makes the values readable by SQLite
-    VALUES = (name, balance)
-    
     # Actual query
-    query(INSERT, VALUES)
+    query(INSERT, (name, balance))
     
     # Returns the ID
-    newRow = getRow()
-    if newRow:
-        ID = newRow[0]
-        print(f"The ID for your new account: {ID}")
+    ID = getRow()[0]
+    print(f"The ID for your new account: {ID}")
 
 # Delete an account
 def delete():
+    
+    # Gets and validates user input
+    while True:
+        try:
+            ID = int(input("What is the ID of the account you wish to delete? "))
+        except ValueError:
+            print("Try again")
+        else:
+            break
+    
+    # Queries for the row
+    query(SELECT, (ID,))
+    row = getRow()
+
+    # Checks if the row exists
+    if row is None:
+        print("That row doesn't exist")
+    
+    # If the row does exist
+    else:
+        query(DELETE, (ID))
+        print("That account is now deleted.")
 
 # Deposit into an account
 def deposit():
@@ -60,3 +80,4 @@ print("4. Delete an account")
 print("5. Exit")"""
 
 create()
+delete()

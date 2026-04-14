@@ -11,9 +11,11 @@ getRow = connector.fetchone
 save = connection.commit
 
 # Query models
-INSERT = "INSERT INTO accounts (name, balance) VALUES (?, ?) RETURNING ID"
-SELECT = "SELECT * FROM accounts WHERE id = (?)"
-DELETE = "DELETE FROM accounts WHERE id = (?)"
+INSERT = "INSERT INTO accounts (name, balance) VALUES (?, ?) RETURNING id"
+SELECT = "SELECT * FROM accounts WHERE id = ?"
+DELETE = "DELETE FROM accounts WHERE id = ?"
+DEPOSIT = "UPDATE accounts SET Balance = Balance + ? WHERE id = ?"
+WITHDRAW = "UPDATE accounts SET Balance = Balance - ? WHERE id = ?"
 
 # Create an account
 def create():
@@ -34,6 +36,7 @@ def create():
     # Returns the ID
     ID = getRow()[0]
     print(f"The ID for your new account: {ID}")
+    #save()
 
 # Delete an account
 def delete():
@@ -47,7 +50,7 @@ def delete():
         else:
             break
     
-    # Queries for the row
+    # Queries the table for the row
     query(SELECT, (ID,))
     row = getRow()
 
@@ -59,14 +62,63 @@ def delete():
     else:
         query(DELETE, (ID))
         print("That account is now deleted.")
+    
+    #save()
 
 # Deposit into an account
 def deposit():
-    pass
+
+    # Gets and validates user input
+    while True:
+        try:
+            ID = int(input("What is the ID of the account you wish to deposit to? "))
+            deposit = float(input("How much money do you want to deposit? $"))
+        except ValueError:
+            print("Try again")
+        if deposit <= 0:
+            print(f"You cannot deposit ${deposit}")
+        else:
+            break
+
+    # Queries the table for the row
+    query(SELECT, (ID,))
+    row = getRow()
+
+    # Checks if the row exists
+    if row is None:
+        print("That row doesn't exist")
+    
+    # If the row does exist
+    else:
+        query(DEPOSIT, (deposit, ID))
+    
 
 # Withdraw from an account
 def withdraw():
-    pass
+    
+    # Gets and validates user input
+    while True:
+        try:
+            ID = int(input("What is the ID of the account you wish to withdraw to? "))
+            deposit = float(input("How much money do you want to withdraw? $"))
+        except ValueError:
+            print("Try again")
+        if deposit <= 0:
+            print(f"You cannot deposit ${deposit}")
+        else:
+            break
+
+    # Queries the table for the row
+    query(SELECT, (ID,))
+    row = getRow()
+
+    # Checks if the row exists
+    if row is None:
+        print("That row doesn't exist")
+    
+    # If the row does exist
+    else:
+        query(WITHDRAW, (deposit, ID))
 
 # Search for an account
 def search():
@@ -80,4 +132,6 @@ print("4. Delete an account")
 print("5. Exit")"""
 
 create()
-delete()
+save()
+withdraw()
+save()

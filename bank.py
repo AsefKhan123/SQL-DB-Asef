@@ -1,4 +1,5 @@
-import sqlite3 as SQL
+import sqlite3 as SQL, os as OS
+from time import sleep as pause
 
 # Establishes the connection
 connection = SQL.connect('accounts.db')
@@ -21,7 +22,8 @@ NAME = "SELECT * FROM accounts WHERE (Name = ?)"
 
 # Create an account
 def create():
-    
+    OS.system("clear")
+
     # Gets and validates user input
     while True:
         try:
@@ -39,9 +41,13 @@ def create():
     ID = getRow()[0]
     print(f"The ID for your new account: {ID}")
     save()
+    OS.system("clear")
+    menu()
 
 # Delete an account
 def delete():
+    OS.system("clear")
+
     
     # Gets and validates user input
     while True:
@@ -66,9 +72,12 @@ def delete():
         print("That account is now deleted.")
     
     save()
+    OS.system("clear")
+    menu()
 
 # Deposit into an account
 def deposit():
+    OS.system("clear")
 
     # Gets and validates user input
     while True:
@@ -94,9 +103,12 @@ def deposit():
     else:
         query(DEPOSIT, (deposit, ID))
     save()
+    OS.system("clear")
+    menu()
 
 # Withdraw from an account
 def withdraw():
+    OS.system("clear")
     
     # Gets and validates user input
     while True:
@@ -125,9 +137,12 @@ def withdraw():
         else:
             query(WITHDRAW, (withdrawal, ID))
         save()
+        OS.system("clear")
+        menu()
 
 # Search for an account
 def search():
+    OS.system("clear")
     
     # Input validation
     while True:
@@ -165,8 +180,12 @@ def search():
             print(f"ID: {row[0]}")
             print(f"Name: {row[1]}")
             print(f"Balance: {row[2]}")
+    
+    OS.system("clear")
+    menu()
 
-def welcome():
+# Welcome menu
+def menu():
     print("Welcome to your banking services! How may we help you?")
     print("1. Deposit into your account")
     print("2. Withdraw from your account")
@@ -175,28 +194,28 @@ def welcome():
     print("5. Filter all accounts")
     print("6. Exit")
     
-    option = input("What would you like to do? ")
+    option = int(input("What would you like to do? "))
     
-    while True:
-        if option == 1:
-            deposit()
+    if option == 1:
+       deposit()
+    elif option == 2:
+        withdraw()
+    elif option == 3:
+        create()
+    elif option == 4:
+        delete()
+    elif option == 5:
+        search()
+    elif option == 6:
+        print("Thank you for using our services. Logging you off right now!")
+        save()
+        finish()
+        pause(1)
+        OS.system("clear")
+    else:
+        print("That's not a valid option. ")
 
-        elif option == 2:
-            withdraw()
-
-        elif option == 3:
-            create()
-
-        elif option == 4:
-            delete()
-
-        elif option == 5:
-            search()
-
-        elif option == 6:
-            save()
-            finish()
-            break
-
-        else:
-            print("That's not a valid option. ")
+print("Logging you in right now...")
+pause(1)
+OS.system("clear")
+menu()

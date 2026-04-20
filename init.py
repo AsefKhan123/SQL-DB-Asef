@@ -9,6 +9,10 @@ def initialize_database():
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
 
+    cursor.execute('''
+        DROP TABLE accounts
+                ''')
+
     # Create the table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS accounts

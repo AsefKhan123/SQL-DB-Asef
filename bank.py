@@ -11,11 +11,12 @@ getRow = connector.fetchone
 save = connection.commit
 
 # Query models
-INSERT = "INSERT INTO accounts (name, balance) VALUES (?, ?) RETURNING id"
-SELECT = "SELECT * FROM accounts WHERE id = ?"
-DELETE = "DELETE FROM accounts WHERE id = ?"
-DEPOSIT = "UPDATE accounts SET Balance = Balance + ? WHERE id = ?"
-WITHDRAW = "UPDATE accounts SET Balance = Balance - ? WHERE id = ?"
+ADD = "INSERT INTO accounts (name, balance) VALUES (?, ?) RETURNING id"
+SELECT = "SELECT * FROM accounts WHERE (id = ?)"
+DELETE = "DELETE FROM accounts WHERE (id = ?)"
+DEPOSIT = "UPDATE accounts SET Balance = (Balance + ?) WHERE id = ?"
+WITHDRAW = "UPDATE accounts SET Balance = (Balance - ?) WHERE id = ?"
+SEARCH = "SELECT * FROM accounts WHERE ?"
 
 # Create an account
 def create():
@@ -31,12 +32,12 @@ def create():
             break
     
     # Actual query
-    query(INSERT, (name, balance))
+    query(ADD, (name, balance))
     
     # Returns the ID
     ID = getRow()[0]
     print(f"The ID for your new account: {ID}")
-    #save()
+    save()
 
 # Delete an account
 def delete():
@@ -60,10 +61,10 @@ def delete():
     
     # If the row does exist
     else:
-        query(DELETE, (ID))
+        query(DELETE, (ID,))
         print("That account is now deleted.")
     
-    #save()
+    save()
 
 # Deposit into an account
 def deposit():
@@ -91,7 +92,7 @@ def deposit():
     # If the row does exist
     else:
         query(DEPOSIT, (deposit, ID))
-    
+    save()
 
 # Withdraw from an account
 def withdraw():
@@ -99,26 +100,30 @@ def withdraw():
     # Gets and validates user input
     while True:
         try:
-            ID = int(input("What is the ID of the account you wish to withdraw to? "))
-            deposit = float(input("How much money do you want to withdraw? $"))
+            ID = int(input("What is the ID of the account you wish to withdraw from? "))
+            withdrawal = float(input("How much money do you want to withdraw? $"))
         except ValueError:
             print("Try again")
-        if deposit <= 0:
-            print(f"You cannot deposit ${deposit}")
+        if withdrawal <= 0:
+            print(f"You cannot withdraw ${withdrawal}")
         else:
             break
 
     # Queries the table for the row
     query(SELECT, (ID,))
     row = getRow()
-
-    # Checks if the row exists
+    
+    # Checks if the withdrawal is possible
     if row is None:
         print("That row doesn't exist")
-    
-    # If the row does exist
     else:
-        query(WITHDRAW, (deposit, ID))
+        balance = row[2]
+    
+        if withdrawal > balance:
+            print(f"You only have ${balance}.")
+        else:
+            query(WITHDRAW, (withdrawal, ID))
+        save()
 
 # Search for an account
 def search():
@@ -132,6 +137,8 @@ print("4. Delete an account")
 print("5. Exit")"""
 
 create()
+save()
+deposit()
 save()
 withdraw()
 save()

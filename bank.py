@@ -12,17 +12,21 @@ getRow = connector.fetchone
 save = connection.commit
 getAll = connector.fetchall
 
+# Aliasing OS.system("clear") to make it easy to write
+clear = lambda: OS.system('clear')
+
 # Query models
-ADD = "INSERT INTO accounts (name, balance) VALUES (?, ?) RETURNING id"
+CREATE = "INSERT INTO accounts (name, balance) VALUES (?, ?) RETURNING id"
 ID = "SELECT * FROM accounts WHERE (id = ?)"
 DELETE = "DELETE FROM accounts WHERE (id = ?)"
-DEPOSIT = "UPDATE accounts SET Balance = (Balance + ?) WHERE id = ?"
-WITHDRAW = "UPDATE accounts SET Balance = (Balance - ?) WHERE id = ?"
+DEPOSIT = "UPDATE accounts SET Balance = ? WHERE id = ?"
+WITHDRAW = "UPDATE accounts SET Balance = ? WHERE id = ?"
 NAME = "SELECT * FROM accounts WHERE (Name = ?)"
+BALANCE = "SELECT * FROM accounts WHERE (?)"
 
 # Create an account
 def create():
-    OS.system("clear")
+    clear()
 
     # Gets and validates user input
     while True:
@@ -35,20 +39,21 @@ def create():
             break
     
     # Actual query
-    query(ADD, (name, balance))
+    query(CREATE, (name, balance))
     
     # Returns the ID
-    ID = getRow()[0]
+    row = getRow()
+    ID = row[0]
     print(f"The ID for your new account: {ID}")
+    pause(5)
     save()
-    OS.system("clear")
+    clear()
     menu()
 
 # Delete an account
 def delete():
-    OS.system("clear")
+    clear()
 
-    
     # Gets and validates user input
     while True:
         try:
@@ -72,22 +77,24 @@ def delete():
         print("That account is now deleted.")
     
     save()
-    OS.system("clear")
+    clear()
     menu()
 
 # Deposit into an account
 def deposit():
-    OS.system("clear")
+    clear()
 
     # Gets and validates user input
     while True:
         try:
             id = int(input("What is the ID of the account you wish to deposit to? "))
             deposit = float(input("How much money do you want to deposit? $"))
+        
+            if deposit <= 0:
+                print(f"You cannot deposit ${deposit}")
+
         except ValueError:
             print("Try again")
-        if deposit <= 0:
-            print(f"You cannot deposit ${deposit}")
         else:
             break
 
@@ -101,24 +108,32 @@ def deposit():
     
     # If the row does exist
     else:
-        query(DEPOSIT, (deposit, ID))
+        newBalance = row[2] + deposit
+        query(DEPOSIT, (newBalance, id))
+        print(f"Successfully deposited ${deposit} into Account #{ID}")
+        pause(1)
     save()
-    OS.system("clear")
+    clear()
     menu()
 
 # Withdraw from an account
 def withdraw():
-    OS.system("clear")
+    clear()
     
     # Gets and validates user input
     while True:
         try:
             id = int(input("What is the ID of the account you wish to withdraw from? "))
             withdrawal = float(input("How much money do you want to withdraw? $"))
+    
+            if withdrawal <= 0:
+                print(f"You cannot withdraw ${withdrawal}")
+    
         except ValueError:
+            clear()
             print("Try again")
-        if withdrawal <= 0:
-            print(f"You cannot withdraw ${withdrawal}")
+            pause(1)
+            clear()
         else:
             break
 
@@ -130,23 +145,28 @@ def withdraw():
     if row is None:
         print("That row doesn't exist")
     else:
+        print(row)
+        pause(1)
         balance = row[2]
     
         if withdrawal > balance:
-            print(f"You only have ${balance}.")
+            print(f"You only have ${balance:.1f}.")
         else:
-            query(WITHDRAW, (withdrawal, ID))
+            newBalance = balance - withdrawal
+            query(WITHDRAW, (newBalance, id))
+            print(f"Successfully withdrew ${withdraw} from Account #{ID}")
+            pause(1)
         save()
-        OS.system("clear")
+        clear()
         menu()
 
 # Search for an account
 def search():
-    OS.system("clear")
+    clear()
     
     # Input validation
     while True:
-        filter = input("What would you like to search by? ID or name? ").lower()
+        filter = input("What would you like to search by? ID, or name? ").lower().strip()
         
         if filter != "name" and filter != "id":
             print("That isn't a valid filter.")
@@ -168,36 +188,54 @@ def search():
             
         elif filter == "name":
             name = str(input("What name would you like to search? "))
-            query(NAME, (name))
+            query(NAME, (name, ))
             rows = getAll()
             break
     
+    clear()
+
     # Prints the rows if exists
     if rows is None:
         print("No accounts match your search. Please try again.")
+        pause(1)
+        clear()
+        menu()
+
+    # If rows exist
     else:
+        print("Retrieving all accounts that match the filter...")
+        pause(1)
+        OS.system("clear")
         for row in rows:
             print(f"ID: {row[0]}")
             print(f"Name: {row[1]}")
-            print(f"Balance: {row[2]}")
+            print(f"Balance: ${row[2]:.2f}")
+            print("------------------")
     
-    OS.system("clear")
+        pause(10)
+        clear()
     menu()
 
 # Welcome menu
 def menu():
-    print("Welcome to your banking services! How may we help you?")
-    print("1. Deposit into your account")
-    print("2. Withdraw from your account")
-    print("3. Create a new account")
-    print("4. Delete an account")
-    print("5. Filter all accounts")
-    print("6. Exit")
     
-    option = int(input("What would you like to do? "))
-    
+    while True:
+        try:
+            print("Welcome to your banking services! How may we help you?")
+            print("1. Deposit into your account")
+            print("2. Withdraw from your account")
+            print("3. Create a new account")
+            print("4. Delete an account")
+            print("5. Filter all accounts")
+            print("6. Exit")
+            option = int(input("What would you like to do? "))
+        except ValueError:
+            clear()
+        else:
+            break
+        
     if option == 1:
-       deposit()
+        deposit()
     elif option == 2:
         withdraw()
     elif option == 3:
@@ -211,11 +249,16 @@ def menu():
         save()
         finish()
         pause(1)
-        OS.system("clear")
+        clear()
     else:
+        clear()
         print("That's not a valid option. ")
+        pause(1)
+        clear()
+        menu()
 
+clear()
 print("Logging you in right now...")
 pause(1)
-OS.system("clear")
+clear()
 menu()

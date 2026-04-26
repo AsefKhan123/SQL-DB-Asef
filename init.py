@@ -9,7 +9,8 @@ def initialize():
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
 
-    cursor.execute("DROP TABLE accounts")
+    # Resets the database
+    # cursor.execute("DROP TABLE accounts")
 
     # Create the table
     cursor.execute("CREATE TABLE IF NOT EXISTS accounts (id integer primary key, Name text, Balance real)")

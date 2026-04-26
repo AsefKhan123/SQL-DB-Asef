@@ -1,16 +1,16 @@
 # SQL-DB-Asef
 
-# INTRO
+# Intro
 This project showcases a mockup of a bank application. It allows the user to create accounts, delete them, withdraw from and deposit to them, and search through them for a given condition. It allows the user to do all of these in a simple, easy-to-use menu with pleasing UI.
 
-# TOOLS AND MODULES
+# Tools and Modules
 I used the sqlite3 module for this project, which is the most important module because it's the way I used to make Python communicate with the database. 
 In addition, I also used the time module's .sleep() function and the os module's .system("clear") to make the UX more pleasing and easy-to-understand, as they let the user see the information the program created given their inputs before clearing the screen and reprinting the menu. Otherwise, the terminal would've been very messy as previous menu() calls would stay and confuse the user on where to look.
 
-# HOW TO RUN
+# How to Run
 To run the project, simply click Run and wait for the menu to print. Then, enter the number corresponding to the desired option in the field, which will then clear the function and trigger the desired function, which will then take any neccessary inputs the user will provide and use it to perform the desired operation. After that, it will take you back to the menu, where the cycle repeats itself with a new option.
 
-# OVERVIEW OF THE FUNCTIONS
+# Overview of the functions
 The five functions and their purposes go as follows:
 1. deposit(): Lets the user deposit money into an account given its ID
 2. withdraw(): Lets the user withdraw money from an account given its ID
@@ -43,5 +43,5 @@ The search() function begins by asking whether the user will search by ID or nam
 After the user enters the correct keyword, the function will which keyword is entered. If "id" was entered, the function will run the ID query, which will SELECT all accounts (rows) in the database with the matching ID, display it to the user and return them back to the menu.
 However, if the user entered "name", the function will run the NAME query, which will SELECT all accounts (rows) in the database, display them to the user and return them back to the menu.
 
-# FUTURE IMPLEMENTATIONS
+# Future Extensions
 I plan on extending the search() function so it also allows the user to search for all accounts (rows) given a balance and whether the function should SELECT all accounts with balances less than, greater than, or equal to the given balance.

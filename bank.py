@@ -110,7 +110,7 @@ def deposit():
     else:
         newBalance = row[2] + deposit
         query(DEPOSIT, (newBalance, id))
-        print(f"Successfully deposited ${deposit} into Account #{ID}")
+        print(f"Successfully deposited ${deposit} into Account #{id}")
         pause(1)
     save()
     clear()
@@ -145,7 +145,6 @@ def withdraw():
     if row is None:
         print("That row doesn't exist")
     else:
-        print(row)
         pause(1)
         balance = row[2]
     
@@ -154,8 +153,8 @@ def withdraw():
         else:
             newBalance = balance - withdrawal
             query(WITHDRAW, (newBalance, id))
-            print(f"Successfully withdrew ${withdraw} from Account #{ID}")
-            pause(1)
+            print(f"Successfully withdrew ${withdrawal:.1f} from Account #{id}")
+            pause(5)
         save()
         clear()
         menu()

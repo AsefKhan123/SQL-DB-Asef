@@ -23,7 +23,7 @@ The next five sections will delve deeper into how each function runs.
 ### deposit()
 The deposit() function begins by asking the user for the ID of the account they wish to deposit to as an integer and how much they want to deposit as a float. If the user enters values that cannot be cast as an integer and float respectively, the function will reprompt the user for the correct input.
 After the user has entered an ID and a dollar amount, the function will SELECT for all acccounts (rows) in the database using the ID query and the given ID. If no row exists with that ID, the function says so before returning the user back to the menu. 
-If the row does exist, the function wlll perform the DEPOSIT query, which UPDATES the Balance column with the sum of the current value and the deposit, save it and return the user back to the menu.
+If the row does exist, the function wlll perform the DEPOSIT query, which will UPDATE the Balance column with the sum of the current value and the deposit, save it and return the user back to the menu.
 
 ### withdraw()
 The withdraw() function begins by asking the user for the ID of the account they wish to withdraw from as an integer and how much they want to withdraw as a float. If the user enters values that cannot be cast as an integer and float respectively, the function will reprompt the user for the correct input.
